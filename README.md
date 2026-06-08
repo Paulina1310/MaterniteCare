@@ -39,10 +39,10 @@ Interface ultra-légère adaptée aux connexions instables.
  ## Suivi Personnalisé :
   Consultation des rendez-vous, rappels de vaccination et ordonnances via un code de suivi unique.
 
- ## Dépôt Sécurisé de Documents : 
+ ## Dépôt Sécurisé de Documents: 
  Téléversement confidentiel des échographies et bilans sanguins.
 
-# 2-Tecnologie Utilisées 
+## 2-Tecnologie Utilisées 
 
 ## Couche et Technologies
 
@@ -55,7 +55,7 @@ Interface ultra-légère adaptée aux connexions instables.
 | Hébergement    | Frontend : GitHub Pages, Backend/DB : Render ou Railway |
 
 
-# 3- Architecture du Projet
+## 3- Architecture du Projet
 
 ```text
 MaterniteCare/
@@ -95,11 +95,9 @@ La structure des données a été conçue pour garantir l'intégrité référent
 ### Modèle Conceptuel de Données (MCD)
 Voici la représentation visuelle des entités et de leurs relations (générée via StartUML) :
 
-![Modèle Conceptuel de Données (MCD) de MaterniteCare](docs/B:\MaterniteCare\docs\MaterniteCare.jpg)
-
 
 ### Script de Création des Tables
 Le schéma relationnel complet, incluant les types ENUM, les contraintes `CHECK` (poids, taille, score Apgar) et les clés étrangères, est disponible dans le dépôt.
 
-🔗 **[Voir le script SQL complet : `Database/MaterniteCare_Tables.sql`](Database/MaterniteCare_Tables.sql)**
+**[Voir le script SQL complet : `Database/MaterniteCare_Tables.sql`](Database/MaterniteCare_Tables.sql)**
 
