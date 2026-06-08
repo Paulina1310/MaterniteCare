@@ -98,7 +98,7 @@ Voici la représentation visuelle des entités et de leurs relations (générée
 ![Modèle Conceptuel de Données (MCD) de MaterniteCare](docs/B:\MaterniteCare\docs\MaterniteCare.jpg)
 
 
-### 💾 Script de Création des Tables
+### Script de Création des Tables
 Le schéma relationnel complet, incluant les types ENUM, les contraintes `CHECK` (poids, taille, score Apgar) et les clés étrangères, est disponible dans le dépôt.
 
 🔗 **[Voir le script SQL complet : `Database/MaterniteCare_Tables.sql`](Database/MaterniteCare_Tables.sql)**
