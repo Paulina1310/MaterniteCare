@@ -3,6 +3,7 @@ CREATE SCHEMA IF NOT EXISTS "MaterniteCare_Données";
 SET SEARCH_PATH TO "maternite_care";
 
 
+
 ---------------/TABLE PERSONNE/---------------------
 
 DROP TYPE IF EXISTS "SITUATION_MATRIMONIALE" CASCADE;
@@ -33,7 +34,7 @@ CONSTRAINT "CHECK_DATE_NAISSANCE" CHECK ("DATE_NAISSANCE" <= CURRENT_DATE AND "D
 );
 
 
---------------/TABLE_WORKSPACE/------------------
+--------------/TABLE TYPE_WORKSPACE/------------------
 
 
 DROP TABLE IF EXISTS "TYPE_WORKSPACE" CASCADE;
@@ -41,9 +42,17 @@ DROP TABLE IF EXISTS "TYPE_WORKSPACE" CASCADE;
 CREATE TABLE "TYPE_WORKSPACE" (
 "ID_TYPE_WORKSPACE" SERIAL NOT NULL,
 "LIBELLE" TEXT NOT NULL UNIQUE,
-    "DESCRIPTION" TEXT,
-    CONSTRAINT "TYPE_WORKSPACE_PK" PRIMARY KEY ("ID_TYPE_WORKSPACE")
+ "DESCRIPTION" TEXT,
+  CONSTRAINT "TYPE_WORKSPACE_PK" PRIMARY KEY ("ID_TYPE_WORKSPACE")
 );
+
+CREATE TYPE "SECTEUR" AS ENUM ('Secteur Consultations Prénatales','Bloc Obstétrical','Unité Post-Partum','Unité de Néonatalogie',
+    'Service des Urgences Obstétricales',
+    'Service d''Hospitalisation',
+    'Secteur Administratif');
+
+ALTER TABLE"TYPE_WORKSPACE" 
+ADD COLUMN "SECTEUR" "SECTEUR";
 
 
 -----------/TABLE TYPE_PERSONNEL/--------------------------
@@ -103,6 +112,13 @@ CONSTRAINT "WORKSPACE_PKEY" PRIMARY KEY ("ID_WORKSPACE"),
 CONSTRAINT "TYPE_WORKSPACE_FK" FOREIGN KEY ("ID_TYPE_WORKSPACE") 
 REFERENCES "TYPE_WORKSPACE" ("ID_TYPE_WORKSPACE")
 );
+
+-----------/AJOUT STATUT_WORKSPACE/--------------
+CREATE TYPE "STATUT_WORKSPACE" AS ENUM ('Disponible','Occupé','En maintenance');
+ALTER TABLE "WORKSPACE"
+ADD COLUMN "STATUT_WORKSPACE" "STATUT_WORKSPACE";
+
+
 
 
 --------------/TABLE LITS /----------------
@@ -367,7 +383,6 @@ CREATE TABLE "ACCOUCHEMENT" (
 "ID_PATIENTE" INTEGER NOT NULL,
 "ID_PERSONNEL" INTEGER NOT NULL,
 "ID_WORKSPACE" INTEGER ,
-
 "DATE_ACCOUCHEMENT" TIMESTAMP NOT NULL,
 "TYPE_ACCOUCHEMENT" "TYPE_ACCOUCHEMENT" NOT NULL,
 "RESULTAT" VARCHAR(50) NOT NULL,
@@ -388,6 +403,8 @@ REFERENCES "WORKSPACE" ("ID_WORKSPACE"),
 CONSTRAINT "ACCOUCHEMENT_ADMISSION_FK" FOREIGN KEY ("ID_ADMISSION") 
 REFERENCES "ADMISSION" ("ID_ADMISSION")
 );
+ 
+
 
 
 ----------/TABLE NOUVEAU NES/-----------------------
@@ -438,3 +455,147 @@ CONSTRAINT "AUDIT_PK" PRIMARY KEY ("ID_AUDIT"),
 CONSTRAINT "AUDIT_PERSONNEL_FK" FOREIGN KEY ("ID_PERSONNEL") 
 REFERENCES "PERSONNEL" ("ID_PERSONNEL")
 );
+
+
+
+--------------/ AJOUT DES DONNEES /-----------------
+
+--------------/TYPE_WORKSPACE/-------------------------
+
+INSERT INTO "TYPE_WORKSPACE" ( "LIBELLE", "DESCRIPTION" ,"SECTEUR")
+
+VALUES('Consultations', 'échographies et examens de routine.', 'Secteur Consultations Prénatales'),
+    ('Bloc','accouchements voie basse et césariennes.', 'Bloc Obstétrical'),
+    ('Post-Partum', 'Chambres pour le séjour de la mère et du bébé après la naissance.', 'Unité Post-Partum'),
+    ('Néonatologie', 'Prise en charge des nouveau-nés prématurés ou nécessitant des soins.', 'Unité de Néonatalogie'),
+    ('Urgences', 'Prise en charge des urgences gynécologiques et obstétricales.', 'Service des Urgences Obstétricales');
+
+
+-- --- ------------------/TYPE_PERSONNEL/--------------- ---
+INSERT INTO "TYPE_PERSONNEL" ("LIBELLE", "DESCRIPTION") VALUES
+('Médecin Gynécologue', 'Médecin spécialiste'),
+('Sage-Femme', 'Professionnelle de la naissance'),
+('Infirmière', 'Soins infirmiers'),
+('Administratif', 'Secrétariat et accueil');
+
+-- -----------------/ ROLE_PERSONNEL/-------------------- ---
+INSERT INTO "ROLE_PERSONNEL" ("LIBELLE", "DESCRIPTION", "NIVEAU_ACCES") VALUES
+('Administrateur', 'Accès total au système', 10),
+('Médecin Chef', 'Gestion médicale et validation', 8),
+('Médecin', 'Suivi patient et prescriptions', 7),
+('Sage-Femme', 'Suivi accouchement et post-partum', 6),
+('Secrétaire', 'Gestion des RDV et admissions', 4);
+
+-- --- ---------------/TYPE_GROSSESSE/---------------- ---
+INSERT INTO "TYPE_GROSSESSE" ("LIBELLE", "DESCRIPTION") VALUES
+('Simple', 'Grossesse monofoetale sans complication'),
+('Gémellaire', 'Grossesse de jumeaux'),
+('À risque', 'Grossesse nécessitant une surveillance accrue');
+
+-- ----------------- /SYMPTOME/ ---------------------
+INSERT INTO "SYMPTOME" ("NOM", "DESCRIPTION", "NIVEAU_SYMPTOME") VALUES
+('Nausées matinales', 'Envies de vomir fréquentes le matin', 'Faible'),
+('Contractions', 'Resserrements utérins', 'Modéré'),
+('Saignements', 'Pertes de sang vaginales', 'Critique'),
+('Maux de tête', 'Céphalées persistantes', 'Modéré');
+
+-- ------------- /WORKSPACE (Salles physiques)/ ---------------
+
+INSERT INTO "WORKSPACE" ("NOM", "NUMERO", "CAPACITE", "ID_TYPE_WORKSPACE", "STATUT_WORKSPACE") VALUES
+('Salle Consultation A', 1, 1, 1,'Disponible'),
+('Salle Accouchement 1', 101, 1, 2,'Disponible'),
+('Chambre Post-Partum 10', 201, 1, 3,'Occupé'),
+('Couveuse Neo 1', 301, 1, 4,'Disponible'),
+('Chambre Post-Partum 8', 202, 1, 4,'En maintenance');
+
+-- --- LITS ---
+INSERT INTO "LITS" ("NUMERO", "LOCALISATION", "ID_WORKSPACE", "STATUT") VALUES
+(1, 'Salle Consultation A', 1, 'Libre'),
+(101, 'Salle Accouchement 1', 2, 'Libre'),
+(201, 'Chambre Post-Partum 10', 3, 'Libre'),
+(301, 'Couveuse Neo 1', 4, 'Libre');
+
+-- --- PERSONNE (Identité commune) ---
+
+INSERT INTO "PERSONNE" ("NOM", "PRENOM", "DATE_NAISSANCE", "SEXE", "TEL", "ADRESSE", "NATIONALITE", "PAYS_D_ORIGINE", "EMAIL", "PROFESSION", "SITUATION_MATRIMONIALE") VALUES
+('Dupont', 'Jean', '1975-05-12', 'Masculin', '0601020304', '10 rue de la Paix', 'Française', 'France', 'dr.dupont@maternite.com', 'Médecin', 'Mariée'),
+('Martin', 'Sophie', '1985-08-20', 'Feminin', '0605060708', '5 avenue des Champs', 'Française', 'France', 'sf.martin@maternite.com', 'Sage-Femme', 'Célibataire');
+
+INSERT INTO "PERSONNE" ("NOM", "PRENOM", "DATE_NAISSANCE", "SEXE", "TEL", "ADRESSE", "NATIONALITE", "PAYS_D_ORIGINE", "EMAIL", "PROFESSION", "SITUATION_MATRIMONIALE") VALUES
+('Marie', 'Anne', '1983-10-2', 'Feminin', '0605067895', 'Paris', 'Française', 'France', 'dr.Marie@maternite.com', 'Médecin', 'Mariée');
+
+
+-- Patientes
+INSERT INTO "PERSONNE" ("NOM", "PRENOM", "DATE_NAISSANCE", "SEXE", "TEL", "ADRESSE", "NATIONALITE", "PAYS_D_ORIGINE", "EMAIL", "PROFESSION", "SITUATION_MATRIMONIALE") VALUES
+('Dubois', 'Claire', '1992-03-15', 'Feminin', '0611121314', '20 rue de la Santé', 'Française', 'France', 'claire.dubois@email.com', 'Enseignante', 'Mariée'),
+('Petit', 'Laura', '1988-11-02', 'Feminin', '0615161718', '8 boulevard Saint-Michel', 'Française', 'France', 'laura.petit@email.com', 'Architecte', 'Célibataire');
+
+
+-- --- PERSONNEL (Lien Staff) ---
+
+INSERT INTO "PERSONNEL" ("ID_PERSONNE", "MATRICULE", "SPECIALITE", "DIPLOME", "ID_TYPE_WORKSPACE", "ID_TYPE_PERSONNEL", "DEBUT_FONCTION", "ETABLISSEMENT_DIPLOME", "ID_ROLE") VALUES
+(1, 'MAT-DOC-001', 'Gynécologie-Obstétrique', 'Doctorat Médecine', 1, 1, '2010-09-01', 'Université Paris Cité', 3);
+
+
+INSERT INTO "PERSONNEL" ("ID_PERSONNE", "MATRICULE", "SPECIALITE", "DIPLOME", "ID_TYPE_WORKSPACE", "ID_TYPE_PERSONNEL", "DEBUT_FONCTION", "ETABLISSEMENT_DIPLOME", "ID_ROLE") VALUES
+(2, 'MAT-SF-002', 'Maïeutique', 'Diplôme Sage-Femme', 2, 2, '2015-06-15', 'École de Sages-Femmes', 4);
+
+INSERT INTO "PERSONNEL" ("ID_PERSONNE", "MATRICULE", "SPECIALITE", "DIPLOME", "ID_TYPE_WORKSPACE", "ID_TYPE_PERSONNEL", "DEBUT_FONCTION", "ETABLISSEMENT_DIPLOME", "ID_ROLE") VALUES
+(3, 'MAT-SF-003', 'Gynécologie-Obstétrique', 'Doctorat Médecine', 3, 3, '2009-07-2', 'Université Londres', 2 );
+
+-- --- PATIENTE (Lien Patientes) ---
+
+INSERT INTO "PATIENTE" ("ID_PERSONNE", "CODE_SUIVI", "MATRICULE", "GROUPE_SANGUIN", "FACTEUR_RHESUS", "ANTECEDENT_MED", "ANTECEDENT_FAMILIAL", "ALLERGIE") VALUES
+(3, 'SUIVI-001', 'PAT-2023-001', 'O+', 'Positif', 'Aucun', 'Diabète type 2 (mère)', 'Pénicilline');
+
+-- Laura Petit (ID_PERSONNE = 4)
+INSERT INTO "PATIENTE" ("ID_PERSONNE", "CODE_SUIVI", "MATRICULE", "GROUPE_SANGUIN", "FACTEUR_RHESUS", "ANTECEDENT_MED", "ANTECEDENT_FAMILIAL", "ALLERGIE") VALUES
+(4, 'SUIVI-002', 'PAT-2023-002', 'A-', 'Négatif', 'Asthme', 'Aucun', 'Aucune');
+
+
+-- --- GROSSESSE ---
+
+-- Claire Dubois (ID_PATIENTE = 1) a une grossesse simple
+
+INSERT INTO "GROSSESSE" ("ID_PATIENTE", "ID_TYPE_GROSSESSE", "DATE_DEBUT", "DATE_ACCOUCHEMENT_PREVUE", "NOMBRE_GROSSESSE", "TRIMESTRE", "STATUT_GROSSESSE", "NIVEAU_RISQUE", "NOMBRE_FOETUS") VALUES
+(1, 1, '2023-10-01 00:00:00', '2024-07-08', 1, '2ème', 'En cours', 'Normal', 1);
+
+-- --- RENDEZ_VOUS ---
+-- Claire a un RDV avec Dr. Dupont
+
+INSERT INTO "RENDEZ_VOUS" ("ID_PATIENTE", "ID_PERSONNEL", "DATE_RDV", "STATUT", "MOTIF") VALUES
+(1, 1, '2026-07-15 10:00:00', 'Confirmé', 'Consultation de routine 2ème trimestre');
+
+-- --- CONSULTATION ---
+
+
+-- La consultation a eu lieu
+INSERT INTO "CONSULTATION" ("ID_PATIENTE", "ID_GROSSESSE", "ID_PERSONNEL", "DATE_CONSULTATION", "MOTIF_CONSULTATION", "DIAGNOSTIC") VALUES
+(1, 1, 1, '2026-08-10 10:00:00', 'Suivi grossesse', 'Grossesse évolutive, bien-être fœtal satisfaisant');
+
+
+-- --- CONST_PHYSIOLOGIQUE (Pour cette consultation) ---
+INSERT INTO "CONST_PHYSIOLOGIQUE" ("ID_CONSULTATION", "ID_PATIENTE", "DATE_MESURE", "TENSION_ARTERIELLE", "POULS", "TEMPERATURE", "TAILLE", "POIDS", "FREQUENCE_CARDIAQUE") VALUES
+(1, 1, '2026-08-10 10:05:00', '120/80', 75, 37.2, 165.00, 62.50, 140);
+
+-- --- CONSULTATION_SYMPTOME ---
+
+-- Claire a eu des nausées lors de cette consultation
+INSERT INTO "CONSULTATION_SYMPTOME" ("ID_CONSULTATION", "ID_SYMPTOME") VALUES (1, 1);
+
+-- --- ADMISSION ---
+-- Claire est admise pour accouchement
+INSERT INTO "ADMISSION " ("ID_PATIENTE ", "ID_GROSSESSE ", "ID_PERSONNEL ", "ID_WORKSPACE ", "ID_LITS ", "DATE_ADMISSION ", "MOTIF ", "SERVICE ", "NIVEAU_URGENCE ", "STATUT_ADMISSION ") VALUES
+(1, 1, 2, 2, 101, '2024-07-08 08:30:00', 'Début de travail', 'Bloc Obstétrical', 'Normal', 'Actif');
+
+
+-- --- ACCOUCHEMENT ---
+
+INSERT INTO "ACCOUCHEMENT" ("ID_PATIENTE", "ID_PERSONNEL", "ID_WORKSPACE", "DATE_ACCOUCHEMENT", "TYPE_ACCOUCHEMENT", "RESULTAT", "POIDS_BEBE", "TAILLE_BEBE", "NOMBRE_FAUSSE_COUCHES") VALUES
+(1, 1, 2, '2026-07-08 14:15:00', 'Voie basse', 'Vivant', 3.25, 50.0, 0);
+
+-- --- NOUVEAU_NES ---
+-- Bébé de Claire (ID_PATIENTE=1, ID_ACCOUCHEMENT=1)
+
+INSERT INTO "NOUVEAU_NES" ("ID_PATIENTE", "ID_ACCOUCHEMENT", "NOM", "PRENOM", "DATE_NAISSANCE", "SEXE", "TAILLE", "POIDS", "SCORE_APGAR_1MIN", "SCORE_APGAR_5MIN", "FACTEUR_RHESUS", "OBSERVATION") VALUES
+(1, 1, 'Dubois', 'Lucas', '2026-07-08 14:15:00', 'Garçon', 50.0, 3.25, 9, 10, 'Positif', 'Bébé en bonne santé, pas de complication');
