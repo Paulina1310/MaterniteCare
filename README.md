@@ -59,6 +59,7 @@ Interface ultra-légère adaptée aux connexions instables.
 
 ```text
 MaterniteCare/
+
 ├── frontend/                 # Interface utilisateur (Vanilla JS + Tailwind)
 │   ├── index.html            # Portail public patiente
 │   ├── dashboard.html        # Tableau de bord soignants
@@ -66,27 +67,54 @@ MaterniteCare/
 │   ├── js/                   # Logique métier (api.js, auth.js, critical_patients.js...)
 │   └── assets/               # Images et icônes
 │
-├── backend/                  # API REST PHP
-│   ├── index.php             # Routeur principal (Front Controller)
-│   ├── config.php            # Connexion PDO PostgreSQL
-│   ├── controllers/          # Logique métier (Auth, Patiente, Document, etc.)
-│   ├── models/               # Couche d'accès aux données (ORM léger)
-│   ├── middleware/           # Sécurité (auth.php, cors.php, roles.php)
-│   ├── routes/               # Déclaration des endpoints API
-│   ├── uploads/              # Stockage sécurisé (protégé par .htaccess)
-│   └── logs/                 # Journalisation des erreurs (errors.log)
+├── Backend/                          # API REST PHP (PDO + PostgreSQL)
+│   │
+│   ├── config/
+│   │   └── database.php              # Connexion PDO à PostgreSQL (lecture du .env)
+│   │
+│   ├── API/                          # Tous les endpoints REST (CRUD complet)
+│   │   ├── auth.php                  # Authentification (login/logout/token)
+│   │   ├── personne.php              # Gestion des identités civiles
+│   │   ├── grossesse.php             # Suivi des grossesses
+│   │   ├── consultation.php          # Consultations prénatales
+│   │   ├── admission.php             # Admissions en maternité
+│   │   ├── accouchement.php          # Accouchements
+│   │   ├── lit.php                   # Gestion des lits
+│   │   └── nouveau_ne.php            # Fiches nouveau-nés
+│   │
+│   ├── .env                          # Variables d'environnement (DB credentials)
+│   ├── mot_de_passe.php               # Script utilitaire : hash bcrypt de mots de passe
+│   
+│   
 │
 ├── database/                 # Gestion de la base de données
 │   ├── schema/               # Scripts de création incrémentaux (01 à 14)
 │   ├── seeds/                # Données de test réalistes (Pointe-Noire)
 │   └── MaterniteCare_Tables.sql # Script maître consolidé et corrigé
-│
-├── docs/                     # Modélisation (MCD, MLD, UML, API_Documentation.md)
+    ── MaterniteCare_starUML # Modélisation du projet│
+├            
 ├── tests/                    # Collections Postman et tests API HTTP
 ├── .env.example              # Modèle de variables d'environnement
 ├── .gitignore                # Exclusion des fichiers sensibles
 └── README.md                 # Ce fichier
 ```
+
+
+
+
+###  URLs de test (environnement local)
+
+| API | URL de test |
+| :--- | :--- |
+| **Auth** | `http://localhost/MaterniteCare/Backend/API/auth.php` |
+| **Personne** | `http://localhost/MaterniteCare/Backend/API/personne.php` |
+| **Grossesse** | `http://localhost/MaterniteCare/Backend/API/grossesse.php` |
+| **Consultation** | `http://localhost/MaterniteCare/Backend/API/consultation.php` |
+| **Admission** | `http://localhost/MaterniteCare/Backend/API/admission.php` |
+| **Accouchement** | `http://localhost/MaterniteCare/Backend/API/accouchement.php` |
+| **Lit** | `http://localhost/MaterniteCare/Backend/API/lit.php` |
+| **Nouveau-né** | `http://localhost/MaterniteCare/Backend/API/nouveau_ne.php` |
+
 
 ##  4. Modélisation de la Base de Données (PostgreSQL)
 
@@ -100,4 +128,5 @@ Voici la représentation visuelle des entités et de leurs relations (générée
 Le schéma relationnel complet, incluant les types ENUM, les contraintes `CHECK` (poids, taille, score Apgar) et les clés étrangères, est disponible dans le dépôt.
 
 **[Voir le script SQL complet : `Database/MaterniteCare_Tables.sql`](Database/MaterniteCare_Tables.sql)**
+
 
