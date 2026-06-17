@@ -11,27 +11,34 @@ CREATE TYPE "SITUATION_MATRIMONIALE" AS ENUM ('Célibataire', 'Mariée', 'Divorc
 DROP TYPE IF EXISTS "SEXE" CASCADE;
 CREATE TYPE "SEXE" AS ENUM ('Feminin', 'Masculin');
 
+
+DROP TABLE IF EXISTS "PERSONNE" CASCADE;
+
+
 CREATE TABLE "PERSONNE" (
-"ID_PERSONNE" SERIAL NOT NULL,
-"NOM" VARCHAR(150) NOT NULL,
-"PRENOM" VARCHAR(150) NOT NULL,
-"DATE_NAISSANCE" DATE NOT NULL,
-"SEXE" "SEXE",
-"TEL" VARCHAR(12),
-"ADRESSE" VARCHAR(50) NOT NULL,
-"NATIONALITE" VARCHAR(50) NOT NULL,
-"PAYS_D_ORIGINE" VARCHAR(50) NOT NULL,
-"EMAIL" VARCHAR(150) NOT NULL UNIQUE,
-"PROFESSION" VARCHAR(30),
-"NOMBRE_ENFANT" INTEGER,
-"NOM_CONJOINT" VARCHAR(100),
-"PRENOM_CONJOINT" VARCHAR(100),
-"AGE_CONJOINT" VARCHAR(5),
-"PROFESSION_CONJOINT" VARCHAR(30),
-"SITUATION_MATRIMONIALE" "SITUATION_MATRIMONIALE",
-CONSTRAINT "PERSONNE_PK" PRIMARY KEY ("ID_PERSONNE"),
-CONSTRAINT "CHECK_DATE_NAISSANCE" CHECK ("DATE_NAISSANCE" <= CURRENT_DATE AND "DATE_NAISSANCE" >= '1900-01-01')
+ "ID_PERSONNE" SERIAL NOT NULL,
+ "NOM" VARCHAR(150) NOT NULL,
+ "PRENOM" VARCHAR(150) NOT NULL,
+ "DATE_NAISSANCE" DATE NOT NULL,
+ "SEXE" "SEXE",
+ "TEL" VARCHAR(12),
+ "ADRESSE" VARCHAR(50) NOT NULL,
+ "NATIONALITE" VARCHAR(50) NOT NULL,
+ "PAYS_D_ORIGINE" VARCHAR(50) NOT NULL,
+ "EMAIL" VARCHAR(150) NOT NULL UNIQUE,
+ "PROFESSION" VARCHAR(30),
+ "NOMBRE_ENFANT" INTEGER,
+ "NOM_CONJOINT" VARCHAR(100),
+ "PRENOM_CONJOINT" VARCHAR(100),
+ "AGE_CONJOINT" VARCHAR(5),
+ "PROFESSION_CONJOINT" VARCHAR(30),
+ "SITUATION_MATRIMONIALE" "SITUATION_MATRIMONIALE",
+ CONSTRAINT "PERSONNE_PK" PRIMARY KEY ("ID_PERSONNE"),
+ CONSTRAINT "CHECK_DATE_NAISSANCE" CHECK ("DATE_NAISSANCE" <= CURRENT_DATE AND "DATE_NAISSANCE" >= '1900-01-01')
 );
+
+
+
 
 
 --------------/TABLE TYPE_WORKSPACE/------------------
@@ -41,7 +48,7 @@ DROP TABLE IF EXISTS "TYPE_WORKSPACE" CASCADE;
 
 CREATE TABLE "TYPE_WORKSPACE" (
 "ID_TYPE_WORKSPACE" SERIAL NOT NULL,
-"LIBELLE" TEXT NOT NULL UNIQUE,
+"LIBELLE_WORK" TEXT NOT NULL UNIQUE,
  "DESCRIPTION" TEXT,
   CONSTRAINT "TYPE_WORKSPACE_PK" PRIMARY KEY ("ID_TYPE_WORKSPACE")
 );
@@ -106,6 +113,7 @@ CREATE TABLE "WORKSPACE" (
 "NOM" VARCHAR(50) NOT NULL,
 "NUMERO" INTEGER NOT NULL,
 "CAPACITE" INTEGER NOT NULL,
+"STATUT_WORKSPACE" "STATUT_WORKSPACE",
 "ID_TYPE_WORKSPACE" INTEGER NOT NULL,
 CONSTRAINT "WORKSPACE_PKEY" PRIMARY KEY ("ID_WORKSPACE"),
 
@@ -308,7 +316,6 @@ CONSTRAINT "DOCUMENT_PERSONNEL_FK" FOREIGN KEY ("ID_PERSONNEL")
 REFERENCES "PERSONNEL" ("ID_PERSONNEL")
 );
 
-
 ------------------/ TABLE RENDEZ_VOUS/----------------
 
 
@@ -338,8 +345,11 @@ CONSTRAINT "CHK_DATE_RDV" CHECK ("DATE_RDV" >= CURRENT_DATE)
 
 DROP TYPE IF EXISTS "STATUT_ADMISSION" CASCADE;
 CREATE TYPE "STATUT_ADMISSION" AS ENUM ('Actif', 'Observation', 'Stable');
+
 DROP TYPE IF EXISTS "NIVEAU_URGENCE" CASCADE;
 CREATE TYPE "NIVEAU_URGENCE" AS ENUM ('Elevé', 'Modéré', 'Normal');
+
+DROP TABLE IF EXISTS "ADMISSION" CASCADE;
 CREATE TABLE "ADMISSION" (
 "ID_ADMISSION" SERIAL NOT NULL,
 "ID_PATIENTE" INTEGER NOT NULL,
@@ -348,27 +358,21 @@ CREATE TABLE "ADMISSION" (
 "ID_WORKSPACE" INTEGER NOT NULL,
 "ID_LITS" INTEGER NOT NULL,
 "DATE_ADMISSION" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-"DATE_SORTIE" TIMESTAMP, 
+"DATE_SORTIE" TIMESTAMP,
 "MOTIF" TEXT NOT NULL,
 "SERVICE" VARCHAR(50) NOT NULL,
 "NIVEAU_URGENCE" "NIVEAU_URGENCE",
 "STATUT_ADMISSION" "STATUT_ADMISSION" DEFAULT 'Actif',
-
 CONSTRAINT "ADMISSION_PK" PRIMARY KEY ("ID_ADMISSION"),
-    
 CONSTRAINT "ADMISSION_PATIENTE_FK" FOREIGN KEY ("ID_PATIENTE") 
 REFERENCES "PATIENTE" ("ID_PATIENTE"),
-    
 CONSTRAINT "ADMISSION_GROSSESSE_FK" FOREIGN KEY ("ID_GROSSESSE") 
 REFERENCES "GROSSESSE" ("ID_GROSSESSE"),
-    
 CONSTRAINT "ADMISSION_PERSONNEL_FK" FOREIGN KEY ("ID_PERSONNEL") 
 REFERENCES "PERSONNEL" ("ID_PERSONNEL"),
-    
-CONSTRAINT "ADMISSION_WORKSPACE_FK" FOREIGN KEY ("ID_WORKSPACE")
+CONSTRAINT "ADMISSION_WORKSPACE_FK" FOREIGN KEY ("ID_WORKSPACE") 
 REFERENCES "WORKSPACE" ("ID_WORKSPACE"),
-    
-CONSTRAINT "ADMISSION_LITS_FK" FOREIGN KEY ("ID_LITS")
+CONSTRAINT "ADMISSION_LITS_FK" FOREIGN KEY ("ID_LITS") 
 REFERENCES "LITS" ("ID_LITS")
 );
 
@@ -380,6 +384,7 @@ DROP TABLE IF EXISTS "ACCOUCHEMENT" CASCADE;
 
 CREATE TABLE "ACCOUCHEMENT" (
 "ID_ACCOUCHEMENT" SERIAL NOT NULL,
+"ID_ADMISSION" INTEGER NOT NULL,
 "ID_PATIENTE" INTEGER NOT NULL,
 "ID_PERSONNEL" INTEGER NOT NULL,
 "ID_WORKSPACE" INTEGER ,
@@ -457,18 +462,36 @@ REFERENCES "PERSONNEL" ("ID_PERSONNEL")
 );
 
 
+--------------------/UTILISATEUR/----------------------------
+
+DROP TABLE IF EXISTS "UTILISATEUR" CASCADE;
+CREATE TABLE "UTILISATEUR" (
+    "ID_UTILISATEUR" SERIAL NOT NULL,
+    "ID_PERSONNE" INTEGER UNIQUE, -- Lien vers l'identité (Médecin OU Patiente)
+    "EMAIL" VARCHAR(150) NOT NULL UNIQUE,
+    "MOT_DE_PASSE" VARCHAR(255) NOT NULL,
+    "DATE_CREATION" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "DERNIERE_CONNEXION" TIMESTAMP,
+    "ACTIF" BOOLEAN DEFAULT TRUE,
+    "TYPE_COMPTE" VARCHAR(20) NOT NULL DEFAULT 'PATIENT', -- 'PATIENT', 'PERSONNEL', 'ADMIN'
+    CONSTRAINT "UTILISATEUR_PK" PRIMARY KEY ("ID_UTILISATEUR"),
+    CONSTRAINT "UTILISATEUR_PERSONNE_FK" FOREIGN KEY ("ID_PERSONNE") 
+        REFERENCES "PERSONNE" ("ID_PERSONNE") ON DELETE CASCADE
+);
+
+
 
 --------------/ AJOUT DES DONNEES /-----------------
 
 --------------/TYPE_WORKSPACE/-------------------------
 
-INSERT INTO "TYPE_WORKSPACE" ( "LIBELLE", "DESCRIPTION" ,"SECTEUR")
+INSERT INTO "TYPE_WORKSPACE" ( "LIBELLE_WORK", "DESCRIPTION" ,"SECTEUR")
 
-VALUES('Consultations', 'échographies et examens de routine.', 'Secteur Consultations Prénatales'),
-    ('Bloc','accouchements voie basse et césariennes.', 'Bloc Obstétrical'),
-    ('Post-Partum', 'Chambres pour le séjour de la mère et du bébé après la naissance.', 'Unité Post-Partum'),
-    ('Néonatologie', 'Prise en charge des nouveau-nés prématurés ou nécessitant des soins.', 'Unité de Néonatalogie'),
-    ('Urgences', 'Prise en charge des urgences gynécologiques et obstétricales.', 'Service des Urgences Obstétricales');
+VALUES('Consultations', 'echographies et examens de routine.', 'Secteur Consultations Prénatales'),
+    ('Bloc','accouchements voie basse et cesariennes.', 'Bloc Obstétrical'),
+    ('Post-Partum', 'Chambres pour le sejour de la mere et du bebe apres la naissance.', 'Unite Post-Partum'),
+    ('Neonatologie', 'Prise en charge des nouveau-nes prematurés ou necessitant des soins.', 'Unite de Neonatalogie'),
+    ('Urgences', 'Prise en charge des urgences gynécologiques et obstetricales.', 'Service des Urgences Obstetricales');
 
 
 -- --- ------------------/TYPE_PERSONNEL/--------------- ---
@@ -480,11 +503,11 @@ INSERT INTO "TYPE_PERSONNEL" ("LIBELLE", "DESCRIPTION") VALUES
 
 -- -----------------/ ROLE_PERSONNEL/-------------------- ---
 INSERT INTO "ROLE_PERSONNEL" ("LIBELLE", "DESCRIPTION", "NIVEAU_ACCES") VALUES
-('Administrateur', 'Accès total au système', 10),
-('Médecin Chef', 'Gestion médicale et validation', 8),
-('Médecin', 'Suivi patient et prescriptions', 7),
+('Administrateur', 'Acces total au systeme', 10),
+('Medecin Chef', 'Gestion medicale et validation', 8),
+('Medecin', 'Suivi patient et prescriptions', 7),
 ('Sage-Femme', 'Suivi accouchement et post-partum', 6),
-('Secrétaire', 'Gestion des RDV et admissions', 4);
+('Secretaire', 'Gestion des RDV et admissions', 4);
 
 -- --- ---------------/TYPE_GROSSESSE/---------------- ---
 INSERT INTO "TYPE_GROSSESSE" ("LIBELLE", "DESCRIPTION") VALUES
@@ -494,17 +517,17 @@ INSERT INTO "TYPE_GROSSESSE" ("LIBELLE", "DESCRIPTION") VALUES
 
 -- ----------------- /SYMPTOME/ ---------------------
 INSERT INTO "SYMPTOME" ("NOM", "DESCRIPTION", "NIVEAU_SYMPTOME") VALUES
-('Nausées matinales', 'Envies de vomir fréquentes le matin', 'Faible'),
-('Contractions', 'Resserrements utérins', 'Modéré'),
+('Nausees matinales', 'Envies de vomir frequentes le matin', 'Faible'),
+('Contractions', 'Resserrements uterins', 'Modere'),
 ('Saignements', 'Pertes de sang vaginales', 'Critique'),
-('Maux de tête', 'Céphalées persistantes', 'Modéré');
+('Maux de tête', 'Céphalees persistantes', 'Modere');
 
 -- ------------- /WORKSPACE (Salles physiques)/ ---------------
 
 INSERT INTO "WORKSPACE" ("NOM", "NUMERO", "CAPACITE", "ID_TYPE_WORKSPACE", "STATUT_WORKSPACE") VALUES
 ('Salle Consultation A', 1, 1, 1,'Disponible'),
 ('Salle Accouchement 1', 101, 1, 2,'Disponible'),
-('Chambre Post-Partum 10', 201, 1, 3,'Occupé'),
+('Chambre Post-Partum 10', 201, 1, 3,'Occupe'),
 ('Couveuse Neo 1', 301, 1, 4,'Disponible'),
 ('Chambre Post-Partum 8', 202, 1, 4,'En maintenance');
 
@@ -517,12 +540,12 @@ INSERT INTO "LITS" ("NUMERO", "LOCALISATION", "ID_WORKSPACE", "STATUT") VALUES
 
 -- --- PERSONNE (Identité commune) ---
 
-INSERT INTO "PERSONNE" ("NOM", "PRENOM", "DATE_NAISSANCE", "SEXE", "TEL", "ADRESSE", "NATIONALITE", "PAYS_D_ORIGINE", "EMAIL", "PROFESSION", "SITUATION_MATRIMONIALE") VALUES
-('Dupont', 'Jean', '1975-05-12', 'Masculin', '0601020304', '10 rue de la Paix', 'Française', 'France', 'dr.dupont@maternite.com', 'Médecin', 'Mariée'),
-('Martin', 'Sophie', '1985-08-20', 'Feminin', '0605060708', '5 avenue des Champs', 'Française', 'France', 'sf.martin@maternite.com', 'Sage-Femme', 'Célibataire');
+INSERT INTO "PERSONNE" ("NOM","PRENOM","DATE_NAISSANCE","SEXE","TEL","ADRESSE","NATIONALITE","PAYS_D_ORIGINE","EMAIL","PROFESSION","SITUATION_MATRIMONIALE") VALUES
+('Dupont','Jean','1975-05-12','Masculin','0601020304','10 rue de la Paix','Française','France','dr.dupont@maternite.com','Médecin','Mariée'),
+('Martin','Sophie','1985-08-20','Feminin','0605060708','5 avenue des Champs','Française','France','sf.martin@maternite.com','Sage-Femme','Célibataire');
 
 INSERT INTO "PERSONNE" ("NOM", "PRENOM", "DATE_NAISSANCE", "SEXE", "TEL", "ADRESSE", "NATIONALITE", "PAYS_D_ORIGINE", "EMAIL", "PROFESSION", "SITUATION_MATRIMONIALE") VALUES
-('Marie', 'Anne', '1983-10-2', 'Feminin', '0605067895', 'Paris', 'Française', 'France', 'dr.Marie@maternite.com', 'Médecin', 'Mariée');
+('Marie','Anne','1983-10-2','Feminin','0605067895','Paris','Française','France','dr.Marie@maternite.com','Médecin','Mariée');
 
 
 -- Patientes
@@ -534,14 +557,14 @@ INSERT INTO "PERSONNE" ("NOM", "PRENOM", "DATE_NAISSANCE", "SEXE", "TEL", "ADRES
 -- --- PERSONNEL (Lien Staff) ---
 
 INSERT INTO "PERSONNEL" ("ID_PERSONNE", "MATRICULE", "SPECIALITE", "DIPLOME", "ID_TYPE_WORKSPACE", "ID_TYPE_PERSONNEL", "DEBUT_FONCTION", "ETABLISSEMENT_DIPLOME", "ID_ROLE") VALUES
-(1, 'MAT-DOC-001', 'Gynécologie-Obstétrique', 'Doctorat Médecine', 1, 1, '2010-09-01', 'Université Paris Cité', 3);
+(1, 'MAT-DOC-001', 'Gynecologie-Obstetrique', 'Doctorat Medecine', 1, 1, '2010-09-01', 'Universite Paris Cite', 3);
 
 
 INSERT INTO "PERSONNEL" ("ID_PERSONNE", "MATRICULE", "SPECIALITE", "DIPLOME", "ID_TYPE_WORKSPACE", "ID_TYPE_PERSONNEL", "DEBUT_FONCTION", "ETABLISSEMENT_DIPLOME", "ID_ROLE") VALUES
 (2, 'MAT-SF-002', 'Maïeutique', 'Diplôme Sage-Femme', 2, 2, '2015-06-15', 'École de Sages-Femmes', 4);
 
 INSERT INTO "PERSONNEL" ("ID_PERSONNE", "MATRICULE", "SPECIALITE", "DIPLOME", "ID_TYPE_WORKSPACE", "ID_TYPE_PERSONNEL", "DEBUT_FONCTION", "ETABLISSEMENT_DIPLOME", "ID_ROLE") VALUES
-(3, 'MAT-SF-003', 'Gynécologie-Obstétrique', 'Doctorat Médecine', 3, 3, '2009-07-2', 'Université Londres', 2 );
+(3, 'MAT-SF-003', 'Gynécologie-Obstetrique', 'Doctorat Médecine', 3, 3, '2009-07-2', 'Universite Londres', 2 );
 
 -- --- PATIENTE (Lien Patientes) ---
 
@@ -558,13 +581,13 @@ INSERT INTO "PATIENTE" ("ID_PERSONNE", "CODE_SUIVI", "MATRICULE", "GROUPE_SANGUI
 -- Claire Dubois (ID_PATIENTE = 1) a une grossesse simple
 
 INSERT INTO "GROSSESSE" ("ID_PATIENTE", "ID_TYPE_GROSSESSE", "DATE_DEBUT", "DATE_ACCOUCHEMENT_PREVUE", "NOMBRE_GROSSESSE", "TRIMESTRE", "STATUT_GROSSESSE", "NIVEAU_RISQUE", "NOMBRE_FOETUS") VALUES
-(1, 1, '2023-10-01 00:00:00', '2024-07-08', 1, '2ème', 'En cours', 'Normal', 1);
+(1, 1, '2023-10-01 00:00:00', '2024-07-08', 1, '2e', 'En cours', 'Normal', 1);
 
 -- --- RENDEZ_VOUS ---
 -- Claire a un RDV avec Dr. Dupont
 
 INSERT INTO "RENDEZ_VOUS" ("ID_PATIENTE", "ID_PERSONNEL", "DATE_RDV", "STATUT", "MOTIF") VALUES
-(1, 1, '2026-07-15 10:00:00', 'Confirmé', 'Consultation de routine 2ème trimestre');
+(1, 1, '2026-07-15 10:00:00', 'Confirme', 'Consultation de routine 2ème trimestre');
 
 -- --- CONSULTATION ---
 
@@ -585,17 +608,37 @@ INSERT INTO "CONSULTATION_SYMPTOME" ("ID_CONSULTATION", "ID_SYMPTOME") VALUES (1
 
 -- --- ADMISSION ---
 -- Claire est admise pour accouchement
-INSERT INTO "ADMISSION " ("ID_PATIENTE ", "ID_GROSSESSE ", "ID_PERSONNEL ", "ID_WORKSPACE ", "ID_LITS ", "DATE_ADMISSION ", "MOTIF ", "SERVICE ", "NIVEAU_URGENCE ", "STATUT_ADMISSION ") VALUES
-(1, 1, 2, 2, 101, '2024-07-08 08:30:00', 'Début de travail', 'Bloc Obstétrical', 'Normal', 'Actif');
+
+INSERT INTO "ADMISSION" ("ID_PATIENTE", "ID_GROSSESSE", "ID_PERSONNEL", "ID_WORKSPACE", "ID_LITS", "DATE_ADMISSION", "MOTIF", "SERVICE", "NIVEAU_URGENCE", "STATUT_ADMISSION") VALUES
+(1, 1, 3, 12, 9, '2024-07-08 08:30:00', 'Début de travail', 'Bloc Obstétrical', 'Normal', 'Actif');
 
 
 -- --- ACCOUCHEMENT ---
 
 INSERT INTO "ACCOUCHEMENT" ("ID_PATIENTE", "ID_PERSONNEL", "ID_WORKSPACE", "DATE_ACCOUCHEMENT", "TYPE_ACCOUCHEMENT", "RESULTAT", "POIDS_BEBE", "TAILLE_BEBE", "NOMBRE_FAUSSE_COUCHES") VALUES
-(1, 1, 2, '2026-07-08 14:15:00', 'Voie basse', 'Vivant', 3.25, 50.0, 0);
+(1, 3, 11, '2026-07-08 14:15:00', 'Voie basse', 'Vivant', 3.25, 50.0, 0);
 
 -- --- NOUVEAU_NES ---
 -- Bébé de Claire (ID_PATIENTE=1, ID_ACCOUCHEMENT=1)
 
 INSERT INTO "NOUVEAU_NES" ("ID_PATIENTE", "ID_ACCOUCHEMENT", "NOM", "PRENOM", "DATE_NAISSANCE", "SEXE", "TAILLE", "POIDS", "SCORE_APGAR_1MIN", "SCORE_APGAR_5MIN", "FACTEUR_RHESUS", "OBSERVATION") VALUES
 (1, 1, 'Dubois', 'Lucas', '2026-07-08 14:15:00', 'Garçon', 50.0, 3.25, 9, 10, 'Positif', 'Bébé en bonne santé, pas de complication');
+
+
+
+-------COMPTE MÉDECIN (Jean Dupont - ID_PERSONNE = 1)
+
+-- Mot de passe en clair : Medecin123!
+
+INSERT INTO "UTILISATEUR" ("ID_PERSONNE", "EMAIL", "MOT_DE_PASSE", "TYPE_COMPTE") 
+VALUES (1, 'dr.dupont@maternite.com', '$2y$10$4smz1R/pN1wQ0v0.arbJVO90vhctrQtvTUDzD39uv6/wgMXXMk0Z6', 'PERSONNEL');
+
+-- COMPTE PATIENTE (Claire Dubois - ID_PERSONNE = 3)
+
+-- Mot de passe en clair : Patient123!
+
+INSERT INTO "UTILISATEUR" ("ID_PERSONNE", "EMAIL", "MOT_DE_PASSE", "TYPE_COMPTE") 
+VALUES (3, 'claire.dubois@email.com', '$2y$10$FU2Ivvf2003tNnRpP5ykV.KF0kO5jJ99fVhdgla8ZZh5pkLoaCeLy', 'PATIENTE');
+
+DELETE FROM "UTILISATEUR" WHERE "ID_PERSONNE" IN (1, 3);
+
