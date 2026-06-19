@@ -1,0 +1,224 @@
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: poppin,sans-serif;
+    text-decoration: none;
+}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: pink;
+    background-position:center;
+    background-size: cover;
+    
+}
+
+@keyframes pageFadeIn {
+    from {
+        opacity:0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* on anime tout le body */
+body {
+    animation: pageFadeIn 0.9s ease-out;
+    
+}
+
+section {
+   background-color: transparent;
+    border: 2px solid rgb(255 255 255 / 76%);
+    box-shadow: 1px 3px 6px 2px #00000054;
+    backdrop-filter: blur(50px);
+    padding: 30px;
+    width: 535px;
+   transition: ease 1.5s;
+    border-radius: 20px
+
+}
+
+
+
+section h1  {
+   font-size: 30px;
+    text-align: center;
+    color: rgb(252, 72, 252);
+    text-decoration: none;
+    margin-bottom: 54px;
+}
+
+
+.input-box {
+    position: relative;
+    width: 100%;
+    margin: 15px 0;
+}
+
+
+.input-box input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #f8f8f8;
+    font-size: 15px;
+    transition: 0.3s ease;
+    outline: none;
+}
+
+
+.input-box input:focus {
+    border-color: #7d4dfc;
+    background: #ffffff;
+    box-shadow: 0 0 6px rgba(125, 77, 252, 0.45);
+}
+
+
+
+
+.input-box input:focus + i {
+    color: #7d4dfc;
+}
+
+
+.remember-forgot{
+    display: flex;
+    color: white;
+}
+
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    color: white;
+    margin-bottom: 25px;
+}
+
+.login-btn {
+   
+    width: 51%;
+    height: 8%;
+    padding: 8px 16px;
+    border-radius: 25px;
+    background: linear-gradient(to right, #ed3aa2, #fd5cd5);
+    color: #fff;
+    outline: none;
+    box-shadow: 1px 5px 3px #00000045;
+    border: 0;
+    color: white;
+    font-size: 17px;
+    margin-left: 107px;
+    margin-top: 57px;
+    font-weight: 30px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.5s;
+}
+.login-btn:hover {
+    background: linear-gradient(to right, #fa6182, #eea8f5);
+    color: #fff;
+    border: 2px solid rgb(255, 255, 255);
+    align-items: center;
+}
+.remember-forgot a ,.register-link a  {
+    color: white;
+    text-decoration: none;
+    transition: 0.5s;
+    font-weight: bold;
+}
+.remember-forgot a:hover, .register-link a {
+    text-decoration: underline;
+}
+
+
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    color: black;
+    margin-bottom: 25px;
+}
+.remember-forgot a ,.register-link a  {
+    color: black;
+    text-decoration: none;
+    transition: 0.5s;
+    
+}
+.remember-forgot a:hover, .register-link a {
+    text-decoration: underline;
+}
+
+.register-link {
+   text-align: center;
+    margin-top: 31px;
+    margin-bottom: 45px;
+    font-family: poppin, sans-serif;
+    font-size: 17px;
+    color: rgba(0, 0, 0, 0.007);
+    margin-left: 265px;
+
+}
+
+/* Classes pour afficher/masquer les messages */
+.hidden {
+    display: none !important;
+}
+
+/* Style pour les messages de succès */
+.bg-green-100 {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    margin-bottom: 15px !important;
+    text-align: center !important;
+}
+
+/* Style pour les messages d'erreur */
+.bg-red-100 {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    margin-bottom: 15px !important;
+    text-align: center !important;
+}
+
+/* Style pour la zone de réponse du serveur */
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.result h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.response {
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+}

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Patiente - MaterniteCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/patiente.css">
+   
+</head>
+<body>
+    <!-- Header avec Logo -->
+    <header class="header">
+        <div class="logo-section">
+            <img src="../Asset/maternitecare.png" alt="MaterniteCare Logo" class="logo-img">
+            <div class="logo-text">
+                <h1>MaterniteCare</h1>
+                <p>plateforme de suivi obstétrical</p>
+            </div>
+        </div>
+        
+        <div class="user-info-header">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <div class="user-name" id="patienteName">Patiente</div>
+                <div class="user-code" id="codeSuiviTop">Code: -</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+            
+            <!-- Menu Burger -->
+            <div class="burger-menu" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Desktop -->
+    <aside class="sidebar">
+        <ul class="sidebar-nav">
+            <li><a class="active" onclick="showSection('accueil', this)"><i class="fas fa-home"></i> Accueil</a></li>
+            <li><a onclick="showSection('grossesse', this)"><i class="fas fa-baby-carriage"></i> Ma Grossesse</a></li>
+            <li><a onclick="showSection('rdv', this)"><i class="fas fa-calendar-alt"></i> Rendez-vous</a></li>
+            <li><a onclick="showSection('documents', this)"><i class="fas fa-file-medical"></i> Documents</a></li>
+            <li><a onclick="showSection('autoeval', this)"><i class="fas fa-clipboard-list"></i> Auto-évaluation</a></li>
+        </ul>
+    </aside>
+
+    <!-- Menu Mobile Overlay -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-nav">
+            <li><a class="active" onclick="showSection('accueil', this); toggleMobileMenu();"><i class="fas fa-home"></i> Accueil</a></li>
+            <li><a onclick="showSection('grossesse', this); toggleMobileMenu();"><i class="fas fa-baby-carriage"></i> Ma Grossesse</a></li>
+            <li><a onclick="showSection('rdv', this); toggleMobileMenu();"><i class="fas fa-calendar-alt"></i> Rendez-vous</a></li>
+            <li><a onclick="showSection('documents', this); toggleMobileMenu();"><i class="fas fa-file-medical"></i> Documents</a></li>
+            <li><a onclick="showSection('autoeval', this); toggleMobileMenu();"><i class="fas fa-clipboard-list"></i> Auto-évaluation</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h2>Bonjour <span id="prenomPatiente">-</span> 💕</h2>
+            <p>Bienvenue dans votre espace personnel de suivi obstétrical</p>
+            <div class="code-suivi-badge">
+                <i class="fas fa-id-card"></i> Code suivi: <span id="codeSuivi">-</span>
+            </div>
+        </div>
+
+        <!-- Alertes Section -->
+        <div class="alertes-section" id="alertesContainer">
+            <!-- Les alertes seront chargées dynamiquement -->
+        </div>
+
+        <!-- Section Accueil -->
+        <section id="section-accueil" class="section active">
+            <h3 class="section-title">Aperçu de ma grossesse</h3>
+            <div class="stats-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-baby-carriage"></i> Suivi grossesse</h3>
+                    <div class="info-row">
+                        <span class="info-label">Trimestre</span>
+                        <span class="info-value" id="grossTrimestre">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date prévue</span>
+                        <span class="info-value" id="grossDatePrevue">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Niveau de risque</span>
+                        <span class="info-value" id="grossRisque">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Statut</span>
+                        <span class="info-value" id="grossStatut">-</span>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-heartbeat"></i> Dernières constantes</h3>
+                    <div class="constantes-grid" id="dernieresConstantes">
+                        <div class="constante-card">
+                            <div class="constante-label">Tension</div>
+                            <div class="constante-value">120/80</div>
+                            <div class="constante-unit">mmHg</div>
+                        </div>
+                        <div class="constante-card">
+                            <div class="constante-label">Poids</div>
+                            <div class="constante-value">62.5</div>
+                            <div class="constante-unit">kg</div>
+                        </div>
+                        <div class="constante-card">
+                            <div class="constante-label">Température</div>
+                            <div class="constante-value">37.2</div>
+                            <div class="constante-unit">°C</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prochains RDV -->
+            <h3 class="section-title">Prochains rendez-vous</h3>
+            <div class="table-container" id="prochainsRdv">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- Section Grossesse -->
+        <section id="section-grossesse" class="section">
+            <h3 class="section-title">Détails de ma grossesse</h3>
+            <div class="info-card" style="margin-bottom: 25px;">
+                <div class="info-row">
+                    <span class="info-label">Date de début</span>
+                    <span class="info-value" id="grossDateDebut">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date prévue d'accouchement</span>
+                    <span class="info-value" id="grossDateAccouchement">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Nombre de fœtus</span>
+                    <span class="info-value" id="grossFoetus">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Observation</span>
+                    <span class="info-value" id="grossObservation" style="text-align: right; max-width: 60%;">-</span>
+                </div>
+            </div>
+
+            <h3 class="section-title">Historique des consultations</h3>
+            <div class="table-container" id="historiqueConsultations">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- Section Rendez-vous -->
+        <section id="section-rdv" class="section">
+            <h3 class="section-title">Mes rendez-vous</h3>
+            <div class="table-container" id="tousRdv">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- Section Documents -->
+        <section id="section-documents" class="section">
+            <h3 class="section-title">Dépôt de documents médicaux</h3>
+            
+            <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Déposez vos documents ici</h3>
+                <p>Glissez-déposez ou cliquez pour sélectionner<br>
+                Formats acceptés: PDF, JPG, PNG (max 5MB)</p>
+                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="handleFileUpload(this)">
+            </div>
+
+            <h3 class="section-title">Mes documents</h3>
+            <div class="documents-grid" id="documentsList">
+                <div class="doc-card">
+                    <div class="doc-icon blue"><i class="fas fa-x-ray"></i></div>
+                    <div class="doc-label">Échographies</div>
+                    <div class="doc-count" id="countEchographies">0</div>
+                </div>
+                <div class="doc-card">
+                    <div class="doc-icon green"><i class="fas fa-file-prescription"></i></div>
+                    <div class="doc-label">Ordonnances</div>
+                    <div class="doc-count" id="countOrdonnances">0</div>
+                </div>
+                <div class="doc-card">
+                    <div class="doc-icon purple"><i class="fas fa-vial"></i></div>
+                    <div class="doc-label">Bilans sanguins</div>
+                    <div class="doc-count" id="countBilans">0</div>
+                </div>
+                <div class="doc-card">
+                    <div class="doc-icon pink"><i class="fas fa-file-medical"></i></div>
+                    <div class="doc-label">Comptes rendus</div>
+                    <div class="doc-count" id="countComptesRendus">0</div>
+                </div>
+                <div class="doc-card">
+                    <div class="doc-icon orange"><i class="fas fa-file-alt"></i></div>
+                    <div class="doc-label">Autres</div>
+                    <div class="doc-count" id="countAutres">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Auto-évaluation -->
+        <section id="section-autoeval" class="section">
+            <h3 class="section-title">Auto-évaluation quotidienne</h3>
+            <div class="info-card">
+                <form id="formAutoEval">
+                    <div class="form-group">
+                        <label>Mouvements du bébé aujourd'hui</label>
+                        <select name="mouvements" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="normal">Normaux</option>
+                            <option value="reduits">Réduits</option>
+                            <option value="absents">Absents</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Contractions</label>
+                        <select name="contractions" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="aucune">Aucune</option>
+                            <option value="legeres">Légères</option>
+                            <option value="regulieres">Régulières</option>
+                            <option value="fortes">Fortes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Saignements</label>
+                        <select name="saignements" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="aucun">Aucun</option>
+                            <option value="leger">Légers</option>
+                            <option value="abondant">Abondants</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Température corporelle (°C)</label>
+                        <input type="number" step="0.1" name="temperature" placeholder="Ex: 37.2" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Symptômes particuliers</label>
+                        <textarea name="symptomes" rows="3" placeholder="Décrivez vos symptômes..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Enregistrer mon auto-évaluation
+                    </button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script src="../JS/api.js"></script>
+    <script src="../JS/patiente.js"></script>
+   
+</body>
+</html>

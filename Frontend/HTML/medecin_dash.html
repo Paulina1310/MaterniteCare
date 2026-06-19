@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Médecin - MaterniteCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/medecin.css">
+</head>
+<body>
+    <!-- HEADER AVEC LOGO -->
+    <header class="header">
+        <div class="logo-section">
+            <img src="../Asset/maternitecare.png" alt="MaterniteCare" class="logo-img">
+            <div class="logo-text">
+                <h1>MaterniteCare</h1>
+                <p>Espace Soignant</p>
+            </div>
+        </div>
+        <div class="user-info-header">
+            <div class="user-avatar"><i class="fas fa-user-md"></i></div>
+            <div class="user-details">
+                <div class="user-name" id="medecinName">Dr. -</div>
+                <div class="user-code" id="medecinRole">Médecin</div>
+            </div>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+            <div class="burger-menu" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDEBAR DESKTOP -->
+    <aside class="sidebar">
+        <ul class="sidebar-nav">
+            <li><a href="#" class="active" onclick="showSection('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+            <li><a href="#" onclick="showSection('patientes', this)"><i class="fas fa-users"></i> Mes patientes</a></li>
+            <li><a href="#" onclick="showSection('grossesses', this)"><i class="fas fa-baby"></i> Grossesses</a></li>
+            <li><a href="#" onclick="showSection('consultations', this)"><i class="fas fa-stethoscope"></i> Consultations</a></li>
+            <li><a href="#" onclick="showSection('admissions', this)"><i class="fas fa-hospital-user"></i> Admissions</a></li>
+            <li><a href="#" onclick="showSection('accouchements', this)"><i class="fas fa-baby-carriage"></i> Accouchements</a></li>
+            <li><a href="#" onclick="showSection('rdv', this)"><i class="fas fa-calendar"></i> Rendez-vous</a></li>
+        </ul>
+    </aside>
+
+    <!-- MENU MOBILE -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-nav">
+            <li><a href="#" class="active" onclick="showSection('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+            <li><a href="#" onclick="showSection('patientes', this)"><i class="fas fa-users"></i> Mes patientes</a></li>
+            <li><a href="#" onclick="showSection('grossesses', this)"><i class="fas fa-baby"></i> Grossesses</a></li>
+            <li><a href="#" onclick="showSection('consultations', this)"><i class="fas fa-stethoscope"></i> Consultations</a></li>
+            <li><a href="#" onclick="showSection('admissions', this)"><i class="fas fa-hospital-user"></i> Admissions</a></li>
+            <li><a href="#" onclick="showSection('accouchements', this)"><i class="fas fa-baby-carriage"></i> Accouchements</a></li>
+            <li><a href="#" onclick="showSection('rdv', this)"><i class="fas fa-calendar"></i> Rendez-vous</a></li>
+        </ul>
+    </div>
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="container">
+        <!-- SECTION DASHBOARD -->
+        <section id="section-dashboard" class="section active">
+            <div class="welcome-card">
+                <h2>Bienvenue, <span id="welcomeName">Dr.</span> 👨‍⚕️</h2>
+                <p>Voici un aperçu de votre activité aujourd'hui</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-ambulance"></i> Urgences</h3>
+                    <div class="constante-value" id="statUrgences">0</div>
+                    <div class="constante-label">Rendez-vous urgents</div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-eye"></i> En observation</h3>
+                    <div class="constante-value" id="statObservation">0</div>
+                    <div class="constante-label">Patientes hospitalisées</div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-stethoscope"></i> Consultations</h3>
+                    <div class="constante-value" id="statConsultations">0</div>
+                    <div class="constante-label">Aujourd'hui</div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-baby-carriage"></i> Accouchements</h3>
+                    <div class="constante-value" id="statAccouchements">0</div>
+                    <div class="constante-label">Aujourd'hui</div>
+                </div>
+            </div>
+
+            <!-- Admissions actives -->
+            <h2 class="section-title">Admissions actives</h2>
+            <div class="table-container" id="admissionsActives">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+
+            <!-- Suivi grossesses -->
+            <h2 class="section-title">Suivi des grossesses</h2>
+            <div class="table-container" id="suiviGrossesses">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION PATIENTES -->
+        <section id="section-patientes" class="section">
+            <h2 class="section-title">Mes patientes</h2>
+            <div class="table-container" id="listePatientesComplete">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION GROSSESSES -->
+        <section id="section-grossesses" class="section">
+            <h2 class="section-title">Grossesses en cours</h2>
+            <div class="table-container" id="listeGrossesses">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION CONSULTATIONS -->
+        <section id="section-consultations" class="section">
+            <h2 class="section-title">Consultations</h2>
+            <button class="btn btn-primary" onclick="openModal('modalConsultation')" style="margin-bottom: 20px;">
+                <i class="fas fa-plus"></i> Nouvelle consultation
+            </button>
+            <div class="table-container" id="listeConsultations">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION ADMISSIONS -->
+        <section id="section-admissions" class="section">
+            <h2 class="section-title">Admissions</h2>
+            <button class="btn btn-primary" onclick="openModal('modalAdmission')" style="margin-bottom: 20px;">
+                <i class="fas fa-plus"></i> Nouvelle admission
+            </button>
+            <div class="table-container" id="listeAdmissions">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION ACCOUCHEMENTS -->
+        <section id="section-accouchements" class="section">
+            <h2 class="section-title">Accouchements</h2>
+            <button class="btn btn-primary" onclick="openModal('modalAccouchement')" style="margin-bottom: 20px;">
+                <i class="fas fa-plus"></i> Nouvel accouchement
+            </button>
+            <div class="table-container" id="listeAccouchements">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION RDV -->
+        <section id="section-rdv" class="section">
+            <h2 class="section-title">Rendez-vous</h2>
+            <div class="table-container" id="listeRdv">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL CONSULTATION -->
+    <div class="modal" id="modalConsultation">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-stethoscope"></i> Nouvelle consultation</h2>
+                <button class="modal-close" onclick="closeModal('modalConsultation')">&times;</button>
+            </div>
+            <form id="formConsultation">
+                <div class="form-group">
+                    <label>ID Patiente *</label>
+                    <input type="number" name="ID_PATIENTE" required>
+                </div>
+                <div class="form-group">
+                    <label>ID Grossesse *</label>
+                    <input type="number" name="ID_GROSSESSE" required>
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="datetime-local" name="DATE_CONSULTATION" required>
+                </div>
+                <div class="form-group">
+                    <label>Motif</label>
+                    <input type="text" name="MOTIF_CONSULTATION">
+                </div>
+                <div class="form-group">
+                    <label>Diagnostic</label>
+                    <textarea name="DIAGNOSTIC" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalConsultation')">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ADMISSION -->
+    <div class="modal" id="modalAdmission">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-hospital-user"></i> Nouvelle admission</h2>
+                <button class="modal-close" onclick="closeModal('modalAdmission')">&times;</button>
+            </div>
+            <form id="formAdmission">
+                <div class="form-group">
+                    <label>ID Patiente *</label>
+                    <input type="number" name="ID_PATIENTE" required>
+                </div>
+                <div class="form-group">
+                    <label>ID Grossesse *</label>
+                    <input type="number" name="ID_GROSSESSE" required>
+                </div>
+                <div class="form-group">
+                    <label>ID Workspace *</label>
+                    <input type="number" name="ID_WORKSPACE" required>
+                </div>
+                <div class="form-group">
+                    <label>ID Lit *</label>
+                    <input type="number" name="ID_LITS" required>
+                </div>
+                <div class="form-group">
+                    <label>Motif *</label>
+                    <input type="text" name="MOTIF" required>
+                </div>
+                <div class="form-group">
+                    <label>Service *</label>
+                    <input type="text" name="SERVICE" required>
+                </div>
+                <div class="form-group">
+                    <label>Niveau d'urgence</label>
+                    <select name="NIVEAU_URGENCE">
+                        <option value="Normal">Normal</option>
+                        <option value="Modéré">Modéré</option>
+                        <option value="Elevé">Élevé</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalAdmission')">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Admettre</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ACCOUCHEMENT -->
+    <div class="modal" id="modalAccouchement">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-baby-carriage"></i> Nouvel accouchement</h2>
+                <button class="modal-close" onclick="closeModal('modalAccouchement')">&times;</button>
+            </div>
+            <form id="formAccouchement">
+                <div class="form-group">
+                    <label>ID Patiente *</label>
+                    <input type="number" name="ID_PATIENTE" required>
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="datetime-local" name="DATE_ACCOUCHEMENT" required>
+                </div>
+                <div class="form-group">
+                    <label>Type *</label>
+                    <select name="TYPE_ACCOUCHEMENT" required>
+                        <option value="Voie basse">Voie basse</option>
+                        <option value="Césarienne">Césarienne</option>
+                        <option value="Forceps">Forceps</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Résultat *</label>
+                    <input type="text" name="RESULTAT" required>
+                </div>
+                <div class="form-group">
+                    <label>Poids bébé (kg)</label>
+                    <input type="number" step="0.01" name="POIDS_BEBE">
+                </div>
+                <div class="form-group">
+                    <label>Taille bébé (cm)</label>
+                    <input type="number" step="0.1" name="TAILLE_BEBE">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalAccouchement')">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../JS/api.js"></script>
+    <script src="../JS/medecin.js"></script>
+</body>
+</html>

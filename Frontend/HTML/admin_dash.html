@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - MaterniteCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/admin.css">
+</head>
+<body>
+    <!-- Header avec Logo -->
+    <header class="header">
+        <div class="logo-section">
+            <img src="../Asset/maternitecare.png" alt="MaterniteCare" class="logo-img">
+            <div class="logo-text">
+                <h1>MaterniteCare</h1>
+                <p>Administration</p>
+            </div>
+        </div>
+        <div class="user-info-header">
+            <div class="user-avatar"><i class="fas fa-user-shield"></i></div>
+            <div class="user-details">
+                <div class="user-name" id="adminName">Admin</div>
+                <div class="user-code" id="adminRole">Administrateur</div>
+            </div>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+            <div class="burger-menu" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Desktop -->
+    <aside class="sidebar">
+        <ul class="sidebar-nav">
+            <li><a href="#" class="active" onclick="showSection('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+            <li><a href="#" onclick="showSection('personnel', this)"><i class="fas fa-user-md"></i> Personnel</a></li>
+            <li><a href="#" onclick="showSection('patientes', this)"><i class="fas fa-users"></i> Patientes</a></li>
+            <li><a href="#" onclick="showSection('workspaces', this)"><i class="fas fa-hospital"></i> Workspaces</a></li>
+            <li><a href="#" onclick="showSection('lits', this)"><i class="fas fa-bed"></i> Lits</a></li>
+            <li><a href="#" onclick="showSection('admissions', this)"><i class="fas fa-hospital-user"></i> Admissions</a></li>
+            <li><a href="#" onclick="showSection('accouchements', this)"><i class="fas fa-baby-carriage"></i> Accouchements</a></li>
+            <li><a href="#" onclick="showSection('audit', this)"><i class="fas fa-clipboard-list"></i> Audit</a></li>
+        </ul>
+    </aside>
+
+    <!-- Menu Mobile -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-nav">
+            <li><a href="#" class="active" onclick="showSection('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+            <li><a href="#" onclick="showSection('personnel', this)"><i class="fas fa-user-md"></i> Personnel</a></li>
+            <li><a href="#" onclick="showSection('patientes', this)"><i class="fas fa-users"></i> Patientes</a></li>
+            <li><a href="#" onclick="showSection('workspaces', this)"><i class="fas fa-hospital"></i> Workspaces</a></li>
+            <li><a href="#" onclick="showSection('lits', this)"><i class="fas fa-bed"></i> Lits</a></li>
+            <li><a href="#" onclick="showSection('admissions', this)"><i class="fas fa-hospital-user"></i> Admissions</a></li>
+            <li><a href="#" onclick="showSection('accouchements', this)"><i class="fas fa-baby-carriage"></i> Accouchements</a></li>
+            <li><a href="#" onclick="showSection('audit', this)"><i class="fas fa-clipboard-list"></i> Audit</a></li>
+        </ul>
+    </div>
+
+    <!-- Contenu Principal -->
+    <div class="container">
+        <!-- SECTION DASHBOARD -->
+        <section id="section-dashboard" class="section active">
+            <div class="welcome-card">
+                <h2>Tableau de bord <i class="fas fa-chart-line"></i></h2>
+                <p>Vue d'ensemble de l'activité de la maternité</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-users"></i> Patientes actives</h3>
+                    <div class="constante-value" id="statPatientes">0</div>
+                    <div class="constante-label">Grossesses en cours</div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-user-md"></i> Personnel médical</h3>
+                    <div class="constante-value" id="statPersonnel">0</div>
+                    <div class="constante-label">Médecins et sages-femmes</div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-bed"></i> Lits disponibles</h3>
+                    <div class="constante-value" id="statLits">0</div>
+                    <div class="constante-label">Sur capacité totale</div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-hospital-user"></i> Admissions actives</h3>
+                    <div class="constante-value" id="statAdmissions">0</div>
+                    <div class="constante-label">Patientes hospitalisées</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Dernières admissions</h2>
+            <div class="table-container" id="dernieresAdmissions">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+
+            <h2 class="section-title">Liste du personnel médical</h2>
+            <div class="table-container" id="listePersonnel">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION PERSONNEL -->
+        <section id="section-personnel" class="section">
+            <h2 class="section-title">Gestion du personnel</h2>
+            <div class="table-container" id="tablePersonnel">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION PATIENTES -->
+        <section id="section-patientes" class="section">
+            <h2 class="section-title">Liste des patientes</h2>
+            <div class="table-container" id="tablePatientes">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION WORKSPACES -->
+        <section id="section-workspaces" class="section">
+            <h2 class="section-title">Workspaces (Services)</h2>
+            <div class="table-container" id="tableWorkspaces">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION LITS -->
+        <section id="section-lits" class="section">
+            <h2 class="section-title">Gestion des lits</h2>
+            <div class="table-container" id="tableLits">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION ADMISSIONS -->
+        <section id="section-admissions" class="section">
+            <h2 class="section-title">Toutes les admissions</h2>
+            <div class="table-container" id="tableAdmissions">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION ACCOUCHEMENTS -->
+        <section id="section-accouchements" class="section">
+            <h2 class="section-title">Historique des accouchements</h2>
+            <div class="table-container" id="tableAccouchements">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+
+        <!-- SECTION AUDIT -->
+        <section id="section-audit" class="section">
+            <h2 class="section-title">Journal d'audit</h2>
+            <div class="table-container" id="tableAudit">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../JS/api.js"></script>
+    <script src="../JS/dash.js"></script>
+    <script src="../JS/admin.js"></script>
+</body>
+</html>
