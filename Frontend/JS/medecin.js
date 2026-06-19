@@ -64,7 +64,7 @@ async function loadDashboard() {
             apiCall('patiente.php'),
             apiCall('grossesse.php'),
             apiCall('consultation.php'),
-            apiCall('rendez_vous.php'),
+            apiCall('rdv.php'),
             apiCall('admissions.php'),
             apiCall('accouchements.php')
         ]);
@@ -348,7 +348,7 @@ async function loadAccouchements() {
 async function loadRdv() {
     try {
         const [rdvResult, patResult] = await Promise.all([
-            apiCall('rendez_vous.php'),
+            apiCall('rdv.php'),
             apiCall('patiente.php')
         ]);
         

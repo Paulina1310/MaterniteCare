@@ -62,7 +62,7 @@ async function loadAlertes() {
         const alertes = [];
         
         // Vérifier les rendez-vous imminents
-        const rdvResult = await apiCall('rendez_vous.php');
+        const rdvResult = await apiCall('rdv.php');
         const rdvs = (rdvResult.data || []).filter(r => r.ID_PATIENTE == idPatiente);
         const today = new Date();
         
