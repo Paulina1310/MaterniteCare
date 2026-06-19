@@ -127,6 +127,12 @@
             <div class="table-container" id="prochainsRdv">
                 <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
             </div>
+
+            <!-- Dernières consultations -->
+            <h3 class="section-title">Dernières consultations</h3>
+            <div class="table-container" id="dernieresConsultations">
+                <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
+            </div>
         </section>
 
         <!-- Section Grossesse -->
@@ -159,7 +165,12 @@
 
         <!-- Section Rendez-vous -->
         <section id="section-rdv" class="section">
-            <h3 class="section-title">Mes rendez-vous</h3>
+            <div class="section-header">
+                <h3 class="section-title">Mes rendez-vous</h3>
+                <button class="btn btn-primary" onclick="openModal('modalRdv')">
+                    <i class="fas fa-plus"></i> Nouveau rendez-vous
+                </button>
+            </div>
             <div class="table-container" id="tousRdv">
                 <div class="loading"><i class="fas fa-spinner"></i> Chargement...</div>
             </div>
@@ -256,6 +267,7 @@
         </section>
     </div>
 
+  
     <script src="../JS/api.js"></script>
     <script src="../JS/patiente.js"></script>
    

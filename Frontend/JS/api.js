@@ -1,6 +1,6 @@
 
 
-const API_BASE = 'http://localhost/MaterniteCare/Backend/API';
+const API_BASE = 'http://127.0.0.1/MaterniteCare/Backend/API';
  
 
 /* Fonction d'appel API avec token d'authentification */

@@ -140,6 +140,7 @@ async function loadGrossesse() {
         const consultResult = await apiCall('consultation.php');
         const consults = (consultResult.data || []).filter(c => c.ID_PATIENTE == idPatiente);
 
+        // Afficher dans la section grossesse (historique complet)
         const container = document.getElementById('historiqueConsultations');
         if (container) {
             if (consults.length === 0) {
@@ -153,6 +154,22 @@ async function loadGrossesse() {
                 container.innerHTML = html;
             }
         }
+
+        // Afficher les dernières consultations dans la section accueil
+        const containerAccueil = document.getElementById('dernieresConsultations');
+        if (containerAccueil) {
+            const recentes = consults.slice(0, 3); // 3 dernières consultations
+            if (recentes.length === 0) {
+                containerAccueil.innerHTML = '<div class="empty-state"><i class="fas fa-stethoscope"></i><p>Aucune consultation récente</p></div>';
+            } else {
+                let html = '<table><thead><tr><th>Date</th><th>Motif</th><th>Diagnostic</th></tr></thead><tbody>';
+                recentes.forEach(c => {
+                    html += `<tr><td>${formatDateTime(c.DATE_CONSULTATION)}</td><td>${c.MOTIF_CONSULTATION || '-'}</td><td>${c.DIAGNOSTIC || '-'}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                containerAccueil.innerHTML = html;
+            }
+        }
     } catch (error) {
         showToast('Erreur chargement grossesse: ' + error.message, 'error');
     }
@@ -163,7 +180,7 @@ async function loadGrossesse() {
  */
 async function loadRdv() {
     try {
-        const result = await apiCall('rendez_vous.php');
+        const result = await apiCall('rdv.php');
         const rdvs = (result.data || []).filter(r => r.ID_PATIENTE == idPatiente);
         
         // Prochains RDV (pour la section accueil)
@@ -316,6 +333,49 @@ if (formAutoEval) {
         e.preventDefault();
         showToast('Auto-évaluation enregistrée', 'success');
         e.target.reset();
+    });
+}
+
+/**
+ * Ouvrir un modal
+ */
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.add('active');
+}
+
+/**
+ * Fermer un modal
+ */
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.remove('active');
+}
+
+/**
+ * Formulaire de création de rendez-vous
+ */
+const formRdv = document.getElementById('formRdv');
+if (formRdv) {
+    formRdv.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const formData = new FormData(formRdv);
+            const data = {
+                ID_PATIENTE: idPatiente,
+                DATE_RDV: formData.get('DATE_RDV'),
+                MOTIF: formData.get('MOTIF') || null,
+                STATUT: 'Confirmé'
+            };
+            
+            await apiCall('rdv.php', 'POST', data);
+            showToast('Rendez-vous demandé avec succès', 'success');
+            closeModal('modalRdv');
+            formRdv.reset();
+            loadRdv(); // Recharger la liste des rendez-vous
+        } catch (error) {
+            showToast('Erreur création RDV: ' + error.message, 'error');
+        }
     });
 }
 

@@ -218,7 +218,7 @@ async function loadWorkspaces() {
             return;
         }
 
-        let html = '<table><thead><tr><th>ID</th><th>Nom</th><th>Numéro</th><th>Capacité</th><th>Secteur</th><th>Statut</th></tr></thead><tbody>';
+        let html = '<table><thead><tr><th>ID</th><th>Nom</th><th>Numéro</th><th>Capacité</th><th>Type</th><th>Statut</th></tr></thead><tbody>';
         workspaces.forEach(w => {
             const statutClass = w.STATUT_WORKSPACE === 'Disponible' ? 'badge-success' : 
                                 w.STATUT_WORKSPACE === 'Occupé' ? 'badge-danger' : 'badge-warning';
@@ -227,7 +227,7 @@ async function loadWorkspaces() {
                 <td>${w.NOM || '-'}</td>
                 <td>${w.NUMERO || '-'}</td>
                 <td>${w.CAPACITE || '-'}</td>
-                <td>${w.SECTEUR || '-'}</td>
+                <td>Type #${w.ID_TYPE_WORKSPACE || '-'}</td>
                 <td><span class="badge ${statutClass}">${w.STATUT_WORKSPACE || '-'}</span></td>
             </tr>`;
         });
