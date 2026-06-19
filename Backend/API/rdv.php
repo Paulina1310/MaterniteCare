@@ -19,11 +19,9 @@ try {
     exit();
 }
 
-// ⚠️ IMPORTANT : Adapter selon que ta BDD a des espaces ou non dans les noms de colonnes
-// Si ta BDD a des espaces : '"RENDEZ_VOUS "', '"ID_RENDEZ_VOUS "', etc.
-// Si ta BDD n'a pas d'espaces : '"RENDEZ_VOUS"', '"ID_RENDEZ_VOUS"', etc.
 
-// 🟢 VERSION SANS ESPACES (recommandée après migration)
+
+
 $tableName = '"maternite_care"."RENDEZ_VOUS"';
 $primaryKey = '"ID_RENDEZ_VOUS"';
 $columns = '"ID_RENDEZ_VOUS", "ID_PATIENTE", "ID_PERSONNEL", "DATE_RDV", "STATUT", "MOTIF"';
@@ -68,10 +66,10 @@ switch ($method) {
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':ID_PATIENTE' => $data['ID_PATIENTE'],
-                ':ID_PERSONNEL' => $data['ID_PERSONNEL'] ?? null,
+                ':ID_PERSONNEL' => isset($data['ID_PERSONNEL']) ? $data['ID_PERSONNEL'] : null,
                 ':DATE_RDV' => $data['DATE_RDV'],
-                ':STATUT' => $data['STATUT'] ?? 'Confirmé',
-                ':MOTIF' => $data['MOTIF'] ?? null
+                ':STATUT' => isset($data['STATUT']) ? $data['STATUT'] : 'Confirmé',
+                ':MOTIF' => isset($data['MOTIF']) ? $data['MOTIF'] : null
             ]);
             $newId = $stmt->fetchColumn();
             http_response_code(201);

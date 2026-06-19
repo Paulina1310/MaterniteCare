@@ -1,8 +1,6 @@
 <?php
-// DÉSACTIVER l'affichage des erreurs pour éviter le HTML dans la réponse
 error_reporting(0);
 ini_set('display_errors', 0);
-
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
@@ -17,10 +15,7 @@ try {
     require_once __DIR__ . '/../config/database.php';
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Erreur connexion base de données"
-    ]);
+    echo json_encode(["success" => false, "message" => "Erreur connexion base de données"]);
     exit;
 }
 
@@ -33,17 +28,13 @@ switch ($method) {
             
             if (empty($data['EMAIL']) || empty($data['MOT_DE_PASSE'])) {
                 http_response_code(400);
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Email et mot de passe obligatoires."
-                ]);
+                echo json_encode(["success" => false, "message" => "Email et mot de passe obligatoires."]);
                 exit;
             }
             
             $email = trim($data['EMAIL']);
             $password = $data['MOT_DE_PASSE'];
             
-            // Requête pour trouver l'utilisateur
             $stmt = $pdo->prepare('
                 SELECT u."ID_UTILISATEUR", u."ID_PERSONNE", u."EMAIL", u."MOT_DE_PASSE",
                        u."TYPE_COMPTE", u."ACTIF"
@@ -55,23 +46,16 @@ switch ($method) {
             
             if (!$user || !$user['ACTIF']) {
                 http_response_code(401);
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Email ou mot de passe incorrect."
-                ]);
+                echo json_encode(["success" => false, "message" => "Email ou mot de passe incorrect."]);
                 exit;
             }
             
             if (!password_verify($password, $user['MOT_DE_PASSE'])) {
                 http_response_code(401);
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Email ou mot de passe incorrect."
-                ]);
+                echo json_encode(["success" => false, "message" => "Email ou mot de passe incorrect."]);
                 exit;
             }
             
-            // Récupérer le profil
             $profil = null;
             $niveauAcces = 0;
             
@@ -99,7 +83,6 @@ switch ($method) {
                 $profil = $stmtProfil->fetch(PDO::FETCH_ASSOC);
             }
             
-            // Mettre à jour dernière connexion
             $stmtUpdate = $pdo->prepare('
                 UPDATE "maternite_care"."UTILISATEUR"
                 SET "DERNIERE_CONNEXION" = CURRENT_TIMESTAMP
@@ -109,20 +92,14 @@ switch ($method) {
             
             $token = bin2hex(random_bytes(32));
             
-            // ✅ CORRECTION : Redirections selon l'environnement
-            // Sur Render : utilise la variable FRONTEND_URL
-            // En local : utilise le chemin relatif
-            $isLocal = ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1');
-            $frontendUrl = $isLocal ? '' : (getenv('FRONTEND_URL') ?: 'https://maternitecare-frontend.onrender.com');
-            
-            // ✅ Noms de fichiers CORRECTS (correspondent aux vrais fichiers)
-            $redirection = $frontendUrl . '/dash_patiente.html';
+           
+            $redirection = 'dashboard_patiente.html';
             
             if ($user['TYPE_COMPTE'] === 'PERSONNEL') {
                 if ($niveauAcces >= 10) {
-                    $redirection = $frontendUrl . '/dash_admin.html';      // ✅ Admin
+                    $redirection = 'admin_dash.html';
                 } else {
-                    $redirection = $frontendUrl . '/medecin_dash.html';    // ✅ Médecin
+                    $redirection = 'medecin_dash.html'; 
                 }
             }
             
@@ -145,19 +122,13 @@ switch ($method) {
             
         } catch (PDOException $e) {
             http_response_code(500);
-            echo json_encode([
-                "success" => false,
-                "message" => "Erreur base de données"
-            ]);
+            echo json_encode(["success" => false, "message" => "Erreur base de données"]);
         }
         break;
         
     default:
         http_response_code(405);
-        echo json_encode([
-            "success" => false,
-            "message" => "Méthode non autorisée."
-        ]);
+        echo json_encode(["success" => false, "message" => "Méthode non autorisée."]);
         break;
 }
 ?>
