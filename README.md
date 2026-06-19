@@ -60,12 +60,27 @@ Interface ultra-légère adaptée aux connexions instables.
 ```text
 MaterniteCare/
 
-├── frontend/                 # Interface utilisateur (Vanilla JS + Tailwind)
-│   ├── index.html            # Portail public patiente
-│   ├── dashboard.html        # Tableau de bord soignants
-│   ├── css/                  # Styles (style.css, tailwind.min.css)
-│   ├── js/                   # Logique métier (api.js, auth.js, critical_patients.js...)
-│   └── assets/               # Images et icônes
+├── ├── Frontend/
+│   ├── Asset/
+│   │   └── logo-maternite.png
+│   ├── CSS/
+│   │   ├── admin.css
+│   │   ├── login.css
+│   │   ├── medecin.css
+│   │   └── patiente.css
+│   ├── HTML/
+│   │   ├── admin_dash.html
+│   │   ├── dash_patiente.html
+│   │   ├── inscription.html
+│   │   ├── login.html
+│   │   └── medecin_dash.html
+│   └── JS/
+│       ├── admin.js
+│       ├── api.js
+│       ├── dash.js
+│       ├── login.js
+│       ├── medecin.js
+│       └── patiente.js              
 │
 ├── Backend/                          # API REST PHP (PDO + PostgreSQL)
 │   │
@@ -130,3 +145,51 @@ Le schéma relationnel complet, incluant les types ENUM, les contraintes `CHECK`
 **[Voir le script SQL complet : `Database/MaterniteCare_Tables.sql`](Database/MaterniteCare_Tables.sql)**
 
 
+## 5. Guide de Test
+
+### Configuration de l'environnement
+
+Ce projet utilise **XAMPP** pour l'environnement de développement local. Pour tester l'application :
+
+1. Assurez-vous que XAMPP est installé et que les services Apache et PostgreSQL sont démarrés
+2. Placez le dossier `MaterniteCare` dans le dossier `htdocs` de XAMPP (`C:\xampp\htdocs\MaterniteCare`)
+3. Accédez à l'application via l'URL : `http://localhost/MaterniteCare`
+4. Naviguez dans le dossier `Frontend/HTML` pour accéder aux pages de l'application
+
+### Connexion à l'application
+
+Pour vous connecter, ouvrez le fichier `login.html` dans votre navigateur.
+
+**Comptes de test disponibles :**
+
+| Rôle | Email | Mot de passe |
+|------|-------|--------------|
+| **Patiente (Claire Dubois)** | claire.dubois@email.com | Patient123! |
+| **Patiente (Laura Petit)** | laura.petit@email.com | Patient123! |
+| **Médecin (Dr. Dupont)** | dr.dupont@maternite.com | Medecin123! |
+| **Administrateur** | admin@maternite.com | Admin123! |
+
+### Dashboard Patiente
+
+Le dashboard patiente permet aux patientes de :
+- Consulter les informations de leur grossesse (trimestre, date d'accouchement prévue, niveau de risque)
+- Voir leurs rendez-vous à venir
+- Accéder à l'historique complet de leurs consultations
+- Déposer des documents médicaux (échographies, bilans sanguins)
+- Faire une auto-évaluation de leurs symptômes (en cours d'evolution)
+
+**Exemples de patientes :**
+- **Claire Dubois** : Patiente avec une grossesse en cours, plusieurs rendez-vous planifiés et des consultations médicales enregistrées
+- **Laura Petit** : Patiente avec un dossier médical complet
+
+### Statut des Dashboards
+
+- **Dashboard Patiente** : Fonctionnel sur certaines sections pour le moment
+- **Dashboard Médecin** : En maintenance
+- **Dashboard Administrateur** : En maintenance
+
+### Note sur le projet
+
+Ce projet a été développé dans le cadre d'un projet académique avec une deadline stricte. En raison de contraintes de temps, le projet n'a pas pu être entièrement abouti jusqu'à la fin. Cependant, il reste en maintenance et ouvert à toute modification et amélioration future.
+
+Les fonctionnalités principales du dashboard patiente sont opérationnelles et peuvent être testées avec les comptes fournis ci-dessus.
